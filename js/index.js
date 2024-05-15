@@ -65,13 +65,14 @@ layer.on('click', (e) => {
   layer.add(number);
 
   imagePoints.push({
-    top: (pos.x / globalImage.width) * globalImage.pixelWidth,
-    left: (pos.y / globalImage.height) * globalImage.pixelHeight,
+    top: (pos.y / globalImage.height) * globalImage.pixelHeight,
+    left: (pos.x / globalImage.width) * globalImage.pixelWidth,
   });
 });
 
 // Upload image
 function uploadImage(e) {
+  layer.destroyChildren();
   const img = new Image();
 
   img.onload = function () {
@@ -101,7 +102,13 @@ uploadImageButton.addEventListener('change', uploadImage);
 const map = L.map('map').setView([51.505, -0.09], 13);
 
 map.on('click', function (e) {
-  const marker = new L.Marker([e.latlng.lat, e.latlng.lng]);
+  const marker = new L.Marker([e.latlng.lat, e.latlng.lng], {
+    icon: new L.AwesomeNumberMarkers({
+      number: mapPoints.length + 1,
+      markerColor: 'red',
+    }),
+  });
+
   marker.addTo(map);
 
   mapPoints.push({
@@ -115,7 +122,6 @@ const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 }).addTo(map);
 
 // Send to server
-
 const API_URL = 'https://example.com';
 
 async function sendToServer() {
@@ -126,12 +132,21 @@ async function sendToServer() {
     data.push([imagePoints[i], mapPoints[i]]);
   }
 
-  const response = await fetch(API_URL, {
-    method: 'POST',
-    body: JSON.stringify(data),
-  });
+  console.log(data);
 
-  if (!response.ok) {
-    console.error(response);
+  try {
+    await fetch(API_URL, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  } catch (err) {
+    console.error(err);
   }
 }
+
+const sendBtn = document.getElementById('send-btn');
+sendBtn.addEventListener('click', async () => {
+  sendBtn.textContent = 'Sending...';
+  await sendToServer();
+  sendBtn.textContent = 'Ok';
+});

@@ -16,19 +16,46 @@ body {
   overflow: hidden;
 }
 
-header {
+header,
+footer {
   width: 90%;
   margin: auto;
+}
+
+header {
   padding-top: 2rem;
+}
+
+footer {
+  display: flex;
+  justify-content: end;
 }
 
 main {
   width: 90%;
   margin: auto;
-  height: 90%;
+  height: 80%;
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+button {
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+  border: 1px solid gray;
+  outline: none;
+  font-size: 1rem;
+  transition: all 200ms ease;
+}
+
+button:hover {
+  background-color: gray;
+  color: white;
+}
+
+button:active {
+  background-color: #606060;
 }
 
 .base-container {
@@ -60,6 +87,6 @@ main {
 /* Map */
 
 #map {
-  min-height: 700px;
+  min-height: 600px;
   height: 100%;
 }
