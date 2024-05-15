@@ -5,17 +5,44 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Coordinates Binding</title>
+
+    <!-- CSS styles -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
+
+    <link rel="stylesheet" href="./css/styles.css" />
   </head>
 
   <body>
+    <header>
+      <input type="file" id="upload-img-button" />
+    </header>
+
     <main>
       <section class="base-container">
-        <div class="image-container">
-          <canvas id="image-canvas"></canvas>
+        <div class="container image-container">
+          <div id="image-canvas"></div>
         </div>
 
-        <div class="map-container"></div>
+        <div class="container map-container">
+          <div id="map"></div>
+        </div>
       </section>
     </main>
+
+    <!-- JS scripts -->
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""
+    ></script>
+
+    <script src="https://unpkg.com/konva@9/konva.min.js"></script>
+
+    <script src="./js/index.js"></script>
   </body>
 </html>
