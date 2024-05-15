@@ -17,6 +17,14 @@ stage.draw();
 const imagePoints = [];
 const mapPoints = [];
 
+// Image
+const globalImage = {
+  width: sceneWidth,
+  height: sceneHeight,
+  pixelWidth: sceneWidth,
+  pixelHeight: sceneHeight,
+};
+
 // Make canvas responsive
 function fitStageIntoParentContainer() {
   const container = document.querySelector('.map-container');
@@ -38,13 +46,28 @@ layer.on('click', (e) => {
   const circle = new Konva.Circle({
     x: pos.x,
     y: pos.y,
-    radius: 5,
+    radius: 10,
     fill: 'red',
   });
 
+  const number = new Konva.Text({
+    x: pos.x,
+    y: pos.y - 5,
+    text: (imagePoints.length + 1).toString(),
+    fontSize: 12,
+    fontFamily: 'Arial',
+    fill: 'white',
+  });
+
+  number.offsetX(number.width() / 2);
+
   layer.add(circle);
-  imagePoints.push(pos);
-  console.log(imagePoints);
+  layer.add(number);
+
+  imagePoints.push({
+    top: (pos.x / globalImage.width) * globalImage.pixelWidth,
+    left: (pos.y / globalImage.height) * globalImage.pixelHeight,
+  });
 });
 
 // Upload image
@@ -53,10 +76,17 @@ function uploadImage(e) {
 
   img.onload = function () {
     const aspectRatio = img.width / img.height;
-    const width = sceneWidth;
-    const height = width / aspectRatio;
+    globalImage.height = globalImage.width / aspectRatio;
 
-    const image = new Konva.Image({ image: img, width, height });
+    globalImage.pixelWidth = img.width;
+    globalImage.pixelHeight = img.height;
+
+    const image = new Konva.Image({
+      image: img,
+      width: globalImage.width,
+      height: globalImage.height,
+    });
+
     layer.add(image);
     layer.draw();
   };
@@ -78,10 +108,30 @@ map.on('click', function (e) {
     latitude: e.latlng.lat,
     longitude: e.latlng.lng,
   });
-
-  console.log(mapPoints);
 });
 
 const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
   maxZoom: 19,
 }).addTo(map);
+
+// Send to server
+
+const API_URL = 'https://example.com';
+
+async function sendToServer() {
+  const data = [];
+  const len = Math.min(imagePoints.length, mapPoints.length);
+
+  for (let i = 0; i < len; i++) {
+    data.push([imagePoints[i], mapPoints[i]]);
+  }
+
+  const response = await fetch(API_URL, {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    console.error(response);
+  }
+}
