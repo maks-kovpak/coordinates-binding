@@ -18,23 +18,30 @@
   </head>
 
   <body>
-    <header>
-      <input type="file" id="upload-img-button" />
-    </header>
-
     <main>
       <section class="base-container">
         <div class="container image-container">
           <div id="image-canvas"></div>
+          <button class="undo-btn" id="undo-image-button">
+            <img src="./images/undo-icon.svg" alt="Undo">
+          </button>
         </div>
 
         <div class="container map-container">
           <div id="map"></div>
+          <button class="undo-btn" id="undo-map-button">
+            <img src="./images/undo-icon.svg" alt="Undo">
+          </button>
         </div>
       </section>
     </main>
 
     <footer>
+      <div>
+        <label for="upload-img-button" class="custom-file-upload">Upload Image</label>
+        <input type="file" id="upload-img-button" />
+      </div>
+
       <button id="send-btn">Ok</button>
     </footer>
 

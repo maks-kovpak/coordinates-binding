@@ -38,7 +38,7 @@ const globalImage = {
 /* Make canvas responsive */
 
 function fitStageIntoParentContainer() {
-  const container = document.querySelector('.map-container');
+  const container = document.querySelector('.image-container');
   const containerWidth = container.offsetWidth;
   const scale = containerWidth / sceneWidth;
 
@@ -76,7 +76,9 @@ function handleCircleLeave(circle) {
 
 layer.on('click', (e) => {
   const pos = layer.getRelativePointerPosition();
+  const circleGroup = new Konva.Group();
 
+  // Draw circle
   const circle = new Konva.Circle({
     x: pos.x,
     y: pos.y,
@@ -84,11 +86,10 @@ layer.on('click', (e) => {
     fill: '#F69730',
   });
 
+  circleGroup.add(circle);
   circles.push(circle);
 
-  circle.on('mouseover', () => handleCircleHover(circle));
-  circle.on('mouseout', () => handleCircleLeave(circle));
-
+  // Draw point number
   const number = new Konva.Text({
     x: pos.x,
     y: pos.y - 5,
@@ -99,12 +100,13 @@ layer.on('click', (e) => {
   });
 
   number.offsetX(number.width() / 2);
+  circleGroup.add(number);
 
-  number.on('mouseover', () => handleCircleHover(circle));
-  number.on('mouseout', () => handleCircleLeave(circle));
+  // Highlight on hover
+  circleGroup.on('mouseover', () => handleCircleHover(circle));
+  circleGroup.on('mouseout', () => handleCircleLeave(circle));
 
-  layer.add(circle);
-  layer.add(number);
+  layer.add(circleGroup);
 
   imagePoints.push({
     top: (pos.y / globalImage.height) * globalImage.pixelHeight,
@@ -149,7 +151,7 @@ uploadImageButton.addEventListener('change', uploadImage);
 
 /* Leaflet */
 
-const map = L.map('map').setView([51.505, -0.09], 13);
+const map = L.map('map').setView([50.45145, 30.52433], 13);
 
 map.on('click', function (e) {
   const index = mapPoints.length;
@@ -231,7 +233,7 @@ stage.on('wheel', (e) => {
 
   // Adjust the scale factor based on the wheel direction
   let newScale = e.evt.deltaY > 0 ? oldScale / scaleBy : oldScale * scaleBy;
-  newScale = Math.min(Math.max(0.75, newScale), 4); // Clamp between 0.75 and 4
+  newScale = Math.min(Math.max(0.2, newScale), 4); // Clamp between 0.2 and 4
 
   // Apply the new scale to the stage
   stage.scale({ x: newScale, y: newScale });
@@ -323,4 +325,21 @@ stage.on('touchmove', function (e) {
 stage.on('touchend', function () {
   lastDist = 0;
   lastCenter = null;
+});
+
+/* Undo */
+const undoImageButton = document.getElementById('undo-image-button');
+const undoMapButton = document.getElementById('undo-map-button');
+
+undoImageButton.addEventListener('click', () => {
+  const circle = circles.pop();
+  circle?.remove();
+  imagePoints.pop();
+});
+
+undoMapButton.addEventListener('click', () => {
+  const marker = mapMarkers.pop();
+  if (marker) map.removeLayer(marker);
+
+  mapPoints.pop();
 });
