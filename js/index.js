@@ -109,6 +109,13 @@ layer.on('click', (e) => {
   circleGroup.on('mouseover', () => handleCircleHover(circleGroup));
   circleGroup.on('mouseout', () => handleCircleLeave(circleGroup));
 
+  // Set circle rotation center
+  const groupCenter = { x: pos.x + circleGroup.width() / 2, y: pos.y + circleGroup.height() / 2 };
+  circleGroup.offset(groupCenter);
+  circleGroup.position(groupCenter);
+
+  circleGroup.rotate(-90 * numberOfRotations);
+
   layer.add(circleGroup);
   circleGroups.push(circleGroup);
 
@@ -161,10 +168,16 @@ uploadImageButton.addEventListener('change', uploadImage);
 /* Rotation */
 
 const rotateButton = document.getElementById('rotate-btn');
+let numberOfRotations = 0;
 
 rotateButton.addEventListener('click', () => {
   const currentRotation = layer.rotation();
   layer.rotation(currentRotation + 90);
+  numberOfRotations++;
+
+  circleGroups.forEach((g) => {
+    g.rotate(currentRotation - 90 * numberOfRotations);
+  });
 });
 
 /* Leaflet */
