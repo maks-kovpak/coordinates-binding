@@ -1,3 +1,5 @@
+import { replaceMarkerColor, getDistance, getCenter } from './utils.js';
+
 /* Basic configuration */
 
 Konva.hitOnDragEnabled = true;
@@ -50,6 +52,28 @@ window.addEventListener('resize', fitStageIntoParentContainer);
 
 /* Draw point on click */
 
+let circles = [];
+
+function handleCircleHover(circle) {
+  circle.setAttr('fill', '#F69730');
+  const idx = circles.indexOf(circle);
+
+  const currentMarker = mapMarkers[idx];
+  if (!currentMarker) return;
+
+  replaceMarkerColor(currentMarker, 'red', 'orange');
+}
+
+function handleCircleLeave(circle) {
+  circle.setAttr('fill', '#D33D29');
+  const idx = circles.indexOf(circle);
+
+  const currentMarker = mapMarkers[idx];
+  if (!currentMarker) return;
+
+  replaceMarkerColor(currentMarker, 'orange', 'red');
+}
+
 layer.on('click', (e) => {
   const pos = layer.getRelativePointerPosition();
 
@@ -57,8 +81,13 @@ layer.on('click', (e) => {
     x: pos.x,
     y: pos.y,
     radius: 10,
-    fill: 'red',
+    fill: '#F69730',
   });
+
+  circles.push(circle);
+
+  circle.on('mouseover', () => handleCircleHover(circle));
+  circle.on('mouseout', () => handleCircleLeave(circle));
 
   const number = new Konva.Text({
     x: pos.x,
@@ -70,6 +99,9 @@ layer.on('click', (e) => {
   });
 
   number.offsetX(number.width() / 2);
+
+  number.on('mouseover', () => handleCircleHover(circle));
+  number.on('mouseout', () => handleCircleLeave(circle));
 
   layer.add(circle);
   layer.add(number);
@@ -120,15 +152,25 @@ uploadImageButton.addEventListener('change', uploadImage);
 const map = L.map('map').setView([51.505, -0.09], 13);
 
 map.on('click', function (e) {
+  const index = mapPoints.length;
   const marker = new L.Marker([e.latlng.lat, e.latlng.lng], {
     icon: new L.AwesomeNumberMarkers({
-      number: mapPoints.length + 1,
+      number: index + 1,
       markerColor: 'red',
     }),
   });
 
-  marker.addTo(map);
+  marker.on('mouseover', () => {
+    replaceMarkerColor(marker, 'red', 'orange');
+    circles[index]?.setAttr('fill', '#F69730');
+  });
 
+  marker.on('mouseout', () => {
+    replaceMarkerColor(marker, 'orange', 'red');
+    circles[index]?.setAttr('fill', '#D33D29');
+  });
+
+  marker.addTo(map);
   mapMarkers.push(marker);
 
   mapPoints.push({
@@ -205,17 +247,6 @@ stage.on('wheel', (e) => {
 });
 
 /* Move, drag and drop */
-
-function getDistance(p1, p2) {
-  return Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
-}
-
-function getCenter(p1, p2) {
-  return {
-    x: (p1.x + p2.x) / 2,
-    y: (p1.y + p2.y) / 2,
-  };
-}
 
 let lastCenter = null;
 let lastDist = 0;
