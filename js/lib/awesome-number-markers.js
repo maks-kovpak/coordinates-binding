@@ -22,7 +22,7 @@
     },
 
     createIcon: function () {
-      var div = document.createElement('div'),
+      const div = document.createElement('div'),
         options = this.options;
 
       div.innerHTML = this._createInner();
@@ -32,7 +32,7 @@
     },
 
     _createInner: function () {
-      var iconColorStyle = '',
+      let iconColorStyle = '',
         options = this.options;
 
       if (options.numberColor) {
@@ -43,7 +43,7 @@
     },
 
     _setIconStyles: function (img, name) {
-      var options = this.options,
+      const options = this.options,
         size = L.point(options['iconSize']),
         anchor = L.point(options.iconAnchor);
 

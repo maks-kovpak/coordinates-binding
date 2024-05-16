@@ -145,6 +145,11 @@ function uploadImage(e) {
 
     layer.add(image);
     layer.draw();
+
+    // Change rotation center
+    const imageCenter = { x: image.width() / 2, y: image.height() / 2 };
+    layer.offset(imageCenter);
+    layer.position(imageCenter);
   };
 
   img.src = URL.createObjectURL(e.target.files[0]);
@@ -152,6 +157,15 @@ function uploadImage(e) {
 
 const uploadImageButton = document.getElementById('upload-img-button');
 uploadImageButton.addEventListener('change', uploadImage);
+
+/* Rotation */
+
+const rotateButton = document.getElementById('rotate-btn');
+
+rotateButton.addEventListener('click', () => {
+  const currentRotation = layer.rotation();
+  layer.rotation(currentRotation + 90);
+});
 
 /* Leaflet */
 
@@ -334,6 +348,7 @@ stage.on('touchend', function () {
 });
 
 /* Undo */
+
 const undoImageButton = document.getElementById('undo-image-button');
 const undoMapButton = document.getElementById('undo-map-button');
 
@@ -349,3 +364,8 @@ undoMapButton.addEventListener('click', () => {
 
   mapPoints.pop();
 });
+
+/* Clear */
+
+const clearButton = document.getElementById('clear-btn');
+clearButton.addEventListener('click', () => window.location.reload());
