@@ -52,11 +52,13 @@ window.addEventListener('resize', fitStageIntoParentContainer);
 
 /* Draw point on click */
 
-let circles = [];
+const circleGroups = [];
 
-function handleCircleHover(circle) {
+function handleCircleHover(circleGroup) {
+  const circle = circleGroup.find('Circle').at(0);
+
   circle.setAttr('fill', '#F69730');
-  const idx = circles.indexOf(circle);
+  const idx = circleGroups.indexOf(circleGroup);
 
   const currentMarker = mapMarkers[idx];
   if (!currentMarker) return;
@@ -64,9 +66,11 @@ function handleCircleHover(circle) {
   replaceMarkerColor(currentMarker, 'red', 'orange');
 }
 
-function handleCircleLeave(circle) {
+function handleCircleLeave(circleGroup) {
+  const circle = circleGroup.find('Circle').at(0);
+
   circle.setAttr('fill', '#D33D29');
-  const idx = circles.indexOf(circle);
+  const idx = circleGroups.indexOf(circleGroup);
 
   const currentMarker = mapMarkers[idx];
   if (!currentMarker) return;
@@ -87,7 +91,6 @@ layer.on('click', (e) => {
   });
 
   circleGroup.add(circle);
-  circles.push(circle);
 
   // Draw point number
   const number = new Konva.Text({
@@ -103,14 +106,15 @@ layer.on('click', (e) => {
   circleGroup.add(number);
 
   // Highlight on hover
-  circleGroup.on('mouseover', () => handleCircleHover(circle));
-  circleGroup.on('mouseout', () => handleCircleLeave(circle));
+  circleGroup.on('mouseover', () => handleCircleHover(circleGroup));
+  circleGroup.on('mouseout', () => handleCircleLeave(circleGroup));
 
   layer.add(circleGroup);
+  circleGroups.push(circleGroup);
 
   imagePoints.push({
-    x: (pos.x / globalImage.width) * globalImage.pixelWidth,
-    y: (pos.y / globalImage.height) * globalImage.pixelHeight,
+    x: Math.round((pos.x / globalImage.width) * globalImage.pixelWidth),
+    y: Math.round((pos.y / globalImage.height) * globalImage.pixelHeight),
   });
 });
 
@@ -164,12 +168,14 @@ map.on('click', function (e) {
 
   marker.on('mouseover', () => {
     replaceMarkerColor(marker, 'red', 'orange');
-    circles[index]?.setAttr('fill', '#F69730');
+    const circle = circleGroups[index]?.find('Circle')?.at(0);
+    circle?.setAttr('fill', '#F69730');
   });
 
   marker.on('mouseout', () => {
     replaceMarkerColor(marker, 'orange', 'red');
-    circles[index]?.setAttr('fill', '#D33D29');
+    const circle = circleGroups[index]?.find('Circle')?.at(0);
+    circle?.setAttr('fill', '#D33D29');
   });
 
   marker.addTo(map);
@@ -332,8 +338,8 @@ const undoImageButton = document.getElementById('undo-image-button');
 const undoMapButton = document.getElementById('undo-map-button');
 
 undoImageButton.addEventListener('click', () => {
-  const circle = circles.pop();
-  circle?.remove();
+  const circleGroup = circleGroups.pop();
+  circleGroup?.remove();
   imagePoints.pop();
 });
 
