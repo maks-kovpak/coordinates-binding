@@ -160,6 +160,7 @@ function uploadImage(e) {
   };
 
   img.src = URL.createObjectURL(e.target.files[0]);
+  enableMap();
 }
 
 const uploadImageButton = document.getElementById('upload-img-button');
@@ -214,9 +215,25 @@ map.on('click', function (e) {
   });
 });
 
+const mapElement = document.getElementById('map');
+
+function disableMap() {
+  map._handlers.forEach((handler) => handler.disable());
+  mapElement.style.opacity = '0.5';
+  mapElement.style.pointerEvents = 'none';
+}
+
+function enableMap() {
+  map._handlers.forEach((handler) => handler.enable());
+  mapElement.style.opacity = '1';
+  mapElement.style.pointerEvents = 'all';
+}
+
 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
   maxZoom: 19,
 }).addTo(map);
+
+disableMap();
 
 /* Send to server */
 
