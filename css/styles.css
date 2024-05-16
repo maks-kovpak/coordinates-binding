@@ -102,3 +102,15 @@ input[type='file'] {
   min-height: 600px;
   height: 100%;
 }
+
+/* Media queries */
+
+@media screen and (max-width: 768px) {
+  .base-container {
+    flex-direction: column;
+  }
+
+  .container {
+    width: 100%;
+  }
+}

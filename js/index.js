@@ -5,7 +5,7 @@ import { replaceMarkerColor, getDistance, getCenter } from './utils.js';
 Konva.hitOnDragEnabled = true;
 
 const sceneWidth = 1000;
-const sceneHeight = 1000;
+const sceneHeight = 3000;
 
 const stage = new Konva.Stage({
   container: 'image-canvas',
@@ -109,8 +109,8 @@ layer.on('click', (e) => {
   layer.add(circleGroup);
 
   imagePoints.push({
-    top: (pos.y / globalImage.height) * globalImage.pixelHeight,
-    left: (pos.x / globalImage.width) * globalImage.pixelWidth,
+    x: (pos.x / globalImage.width) * globalImage.pixelWidth,
+    y: (pos.y / globalImage.height) * globalImage.pixelHeight,
   });
 });
 
@@ -176,12 +176,12 @@ map.on('click', function (e) {
   mapMarkers.push(marker);
 
   mapPoints.push({
-    latitude: e.latlng.lat,
-    longitude: e.latlng.lng,
+    lat: e.latlng.lat,
+    lon: e.latlng.lng,
   });
 });
 
-const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
   maxZoom: 19,
 }).addTo(map);
 
@@ -194,7 +194,7 @@ async function sendToServer() {
   const len = Math.min(imagePoints.length, mapPoints.length);
 
   for (let i = 0; i < len; i++) {
-    data.push([imagePoints[i], mapPoints[i]]);
+    data.push({ ...imagePoints[i], ...mapPoints[i] });
   }
 
   console.log(data);
