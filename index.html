@@ -54,7 +54,11 @@
         <button id="clear-btn">Clear</button>
       </div>
 
-      <button id="send-btn">Ok</button>
+      <!-- TODO: change action url -->
+      <form action="https://example.com/" method="post">
+        <input id="json-data-field" type="hidden" name="data" value="[]" />
+        <button id="send-btn" type="submit">Ok</button>
+      </form>
     </footer>
 
     <!-- JS scripts -->

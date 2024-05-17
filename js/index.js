@@ -249,9 +249,6 @@ disableMap();
 
 /* Send to server */
 
-// TODO: modify if needed
-const API_URL = `/${uuid}/`;
-
 function getFormattedData() {
   const data = [];
   const len = Math.min(imagePoints.length, mapPoints.length);
@@ -260,30 +257,8 @@ function getFormattedData() {
     data.push({ ...imagePoints[i], ...mapPoints[i] });
   }
 
-  console.log(data);
-
   return data;
 }
-
-async function sendToServer() {
-  const data = getFormattedData();
-
-  try {
-    await fetch(API_URL, {
-      method: 'POST',
-      body: JSON.stringify(data),
-    });
-  } catch (err) {
-    console.error(err);
-  }
-}
-
-const sendBtn = document.getElementById('send-btn');
-sendBtn.addEventListener('click', async () => {
-  sendBtn.textContent = 'Sending...';
-  await sendToServer();
-  sendBtn.textContent = 'Ok';
-});
 
 /* Zoom */
 
@@ -421,6 +396,9 @@ clearButton.addEventListener('click', () => window.location.reload());
 
 /* Show calculation error */
 
+// TODO: modify if needed
+const API_URL = `/${uuid}/`;
+
 async function showCalculationError() {
   const data = getFormattedData();
   const field = document.getElementById('calculation-error-field');
@@ -441,9 +419,18 @@ async function showCalculationError() {
   }
 }
 
-document.addEventListener('AddedNewPoint', showCalculationError);
-document.addEventListener('AddedNewMarker', showCalculationError);
+function updateJsonData() {
+  const data = getFormattedData();
+  const jsonDataField = document.getElementById('json-data-field');
+  jsonDataField.value = JSON.stringify(data);
+}
 
-/* Display image */
+document.addEventListener('AddedNewPoint', () => {
+  showCalculationError();
+  updateJsonData();
+});
 
-uploadImage();
+document.addEventListener('AddedNewMarker', () => {
+  showCalculationError();
+  updateJsonData();
+});
