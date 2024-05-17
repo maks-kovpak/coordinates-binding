@@ -123,6 +123,8 @@ layer.on('click', (e) => {
     x: Math.round((pos.x / globalImage.width) * globalImage.pixelWidth),
     y: Math.round((pos.y / globalImage.height) * globalImage.pixelHeight),
   });
+
+  document.dispatchEvent(new CustomEvent('AddedNewPoint'));
 });
 
 /* Upload image */
@@ -213,6 +215,8 @@ map.on('click', function (e) {
     lat: e.latlng.lat,
     lon: e.latlng.lng,
   });
+
+  document.dispatchEvent(new CustomEvent('AddedNewMarker'));
 });
 
 const mapElement = document.getElementById('map');
@@ -239,7 +243,7 @@ disableMap();
 
 const API_URL = 'https://example.com';
 
-async function sendToServer() {
+function getFormattedData() {
   const data = [];
   const len = Math.min(imagePoints.length, mapPoints.length);
 
@@ -248,6 +252,12 @@ async function sendToServer() {
   }
 
   console.log(data);
+
+  return data;
+}
+
+async function sendToServer() {
+  const data = getFormattedData();
 
   try {
     await fetch(API_URL, {
@@ -399,3 +409,27 @@ undoMapButton.addEventListener('click', () => {
 
 const clearButton = document.getElementById('clear-btn');
 clearButton.addEventListener('click', () => window.location.reload());
+
+/* Show calculation error */
+
+async function showCalculationError() {
+  const data = getFormattedData();
+  const field = document.getElementById('calculation-error-field');
+
+  if (data.length <= 2) return;
+
+  try {
+    const response = await fetch(API_URL + '/endpoint', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+
+    const calculationErrorData = await response.json();
+    field.value = calculationErrorData?.value ?? 'unknown';
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+document.addEventListener('AddedNewPoint', showCalculationError);
+document.addEventListener('AddedNewMarker', showCalculationError);
