@@ -164,8 +164,12 @@ function uploadImage(e) {
   const reader = new FileReader();
 
   reader.onload = function () {
-    const tiff = new Tiff({ buffer: this.result });
-    img.src = tiff.toDataURL();
+    if (e.target.files[0].type === 'image/tiff') {
+      const tiff = new Tiff({ buffer: this.result });
+      img.src = tiff.toDataURL();
+    } else {
+      img.src = URL.createObjectURL(e.target.files[0]);
+    }
   };
 
   reader.readAsArrayBuffer(e.target.files[0]);
