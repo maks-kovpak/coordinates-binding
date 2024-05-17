@@ -1,4 +1,4 @@
-import { replaceMarkerColor, getDistance, getCenter, getImageFromCDN } from './utils.js';
+import { replaceMarkerColor, getDistance, getCenter } from './utils.js';
 
 /* Basic configuration */
 
@@ -129,8 +129,6 @@ layer.on('click', (e) => {
 
 /* Upload image */
 
-const uuid = document.getElementById('uuid').dataset.uuid;
-
 function uploadImage(e) {
   // Clear canvas and map
   layer.destroyChildren();
@@ -163,18 +161,20 @@ function uploadImage(e) {
     layer.position(imageCenter);
   };
 
-  const url = `https://cdn.farsightvision.com/assets/${uuid}/odm_orthophoto/odm_orthophoto.tif`;
+  const reader = new FileReader();
 
-  getImageFromCDN(url).then((buffer) => {
-    const tiff = new Tiff({ buffer });
+  reader.onload = function () {
+    const tiff = new Tiff({ buffer: this.result });
     img.src = tiff.toDataURL();
-  });
+  };
+
+  reader.readAsArrayBuffer(e.target.files[0]);
 
   enableMap();
 }
 
-// const uploadImageButton = document.getElementById('upload-img-button');
-// uploadImageButton.addEventListener('change', uploadImage);
+const uploadImageButton = document.getElementById('upload-img-button');
+uploadImageButton.addEventListener('change', uploadImage);
 
 /* Rotation */
 
@@ -250,7 +250,7 @@ disableMap();
 /* Send to server */
 
 // TODO: modify if needed
-const API_URL = `/${uuid}/`;
+const API_URL = `https://example.com/`;
 
 function getFormattedData() {
   const data = [];
@@ -443,7 +443,3 @@ async function showCalculationError() {
 
 document.addEventListener('AddedNewPoint', showCalculationError);
 document.addEventListener('AddedNewMarker', showCalculationError);
-
-/* Display image */
-
-uploadImage();
