@@ -1,37 +1,31 @@
 import ImageCanvas from './src/ImageCanvas.js';
 import NumberedPoint from './src/NumberedPoint.js';
-import GeoMap from './src/Map.js';
+import GeoMap from './src/GeoMap.js';
 
 /* Global data */
 
 window.imagePoints = [];
 window.mapPoints = [];
+
 window.circleGroups = [];
 window.mapMarkers = [];
 
-/* Canvas */
-
-const stage = new ImageCanvas('image-canvas');
-stage.init();
-
-/* Map */
-
+const canvas = new ImageCanvas('image-canvas');
 const map = new GeoMap('map', [50.45145, 30.52433]);
-map.init();
 
 /* Draw point on click */
 
-stage.layer.on('click', () => {
-  const pos = stage.layer.getRelativePointerPosition();
+canvas.layer.on('click', () => {
+  const pos = canvas.layer.getRelativePointerPosition();
   const numberedPoint = new NumberedPoint(pos, imagePoints.length + 1);
   numberedPoint.rotate(-90 * numberOfRotations);
 
-  stage.layer.add(numberedPoint);
+  canvas.layer.add(numberedPoint);
   circleGroups.push(numberedPoint);
 
   imagePoints.push({
-    x: Math.round((pos.x / stage.imageData.width) * stage.imageData.pixelWidth),
-    y: Math.round((pos.y / stage.imageData.height) * stage.imageData.pixelHeight),
+    x: Math.round((pos.x / canvas.imageData.width) * canvas.imageData.pixelWidth),
+    y: Math.round((pos.y / canvas.imageData.height) * canvas.imageData.pixelHeight),
   });
 
   document.dispatchEvent(new CustomEvent('AddedNewPoint'));
@@ -47,7 +41,7 @@ uploadImageButton.addEventListener('change', (e) => {
   map.removeMarkers();
 
   if (e.target.files.length) {
-    stage.uploadImage({ file: e.target.files[0] });
+    canvas.uploadImage({ file: e.target.files[0] });
     map.enable();
   }
 });
@@ -58,8 +52,8 @@ const rotateButton = document.getElementById('rotate-btn');
 let numberOfRotations = 0;
 
 rotateButton.addEventListener('click', () => {
-  const currentRotation = stage.layer.rotation();
-  stage.layer.rotation(currentRotation + 90);
+  const currentRotation = canvas.layer.rotation();
+  canvas.layer.rotation(currentRotation + 90);
   numberOfRotations++;
 
   circleGroups.forEach((g) => {
@@ -92,6 +86,7 @@ async function sendToServer() {
     await fetch(API_URL, {
       method: 'POST',
       body: JSON.stringify(data),
+      headers: { 'Content-Type': 'application/json' },
     });
   } catch (err) {
     console.error(err);
@@ -118,7 +113,7 @@ undoImageButton.addEventListener('click', () => {
 
 undoMapButton.addEventListener('click', () => {
   const marker = mapMarkers.pop();
-  if (marker) map.removeLayer(marker);
+  if (marker) map.instance.removeLayer(marker);
 
   mapPoints.pop();
 });

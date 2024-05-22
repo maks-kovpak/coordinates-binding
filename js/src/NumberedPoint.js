@@ -7,25 +7,28 @@ class NumberedPoint extends Konva.Group {
     this.pos = position;
     this.number = number;
 
+    this.circle = new Konva.Circle({
+      x: this.pos.x,
+      y: this.pos.y,
+      radius: 10,
+      fill: '#F69730',
+    });
+
     this._create();
   }
 
   _onMouseOver() {
-    const circle = this.findOne('Circle');
+    this.circle.setAttr('fill', '#F69730');
+    const idx = circleGroups.indexOf(this);
 
-    circle.setAttr('fill', '#F69730');
-    const idx = circleGroups.indexOf(this); // todo
-
-    const currentMarker = mapMarkers[idx]; // todo
+    const currentMarker = mapMarkers[idx];
     if (!currentMarker) return;
 
     replaceMarkerColor(currentMarker, 'red', 'orange');
   }
 
   _onMouseOut() {
-    const circle = this.findOne('Circle');
-
-    circle.setAttr('fill', '#D33D29');
+    this.circle.setAttr('fill', '#D33D29');
     const idx = circleGroups.indexOf(this);
 
     const currentMarker = mapMarkers[idx];
@@ -36,14 +39,7 @@ class NumberedPoint extends Konva.Group {
 
   _create() {
     // Draw circle
-    const circle = new Konva.Circle({
-      x: this.pos.x,
-      y: this.pos.y,
-      radius: 10,
-      fill: '#F69730',
-    });
-
-    this.add(circle);
+    this.add(this.circle);
 
     // Draw point number
     const numberText = new Konva.Text({

@@ -6,6 +6,7 @@ class GeoMap {
   constructor(id, viewCenter) {
     this.instance = Leaflet.map(id).setView(viewCenter, 13);
     this.container = document.getElementById(id);
+    this.init();
   }
 
   init() {
@@ -32,7 +33,7 @@ class GeoMap {
   }
 
   _onClick(e) {
-    const index = mapPoints.length;
+    const index = mapMarkers.length;
     const marker = new Leaflet.Marker([e.latlng.lat, e.latlng.lng], {
       icon: new Leaflet.AwesomeNumberMarkers({
         number: index + 1,
@@ -42,13 +43,13 @@ class GeoMap {
 
     marker.on('mouseover', () => {
       replaceMarkerColor(marker, 'red', 'orange');
-      const circle = circleGroups[index]?.findOne('Circle');
+      const circle = circleGroups[index]?.circle;
       circle?.setAttr('fill', '#F69730');
     });
 
     marker.on('mouseout', () => {
       replaceMarkerColor(marker, 'orange', 'red');
-      const circle = circleGroups[index]?.findOne('Circle');
+      const circle = circleGroups[index]?.circle;
       circle?.setAttr('fill', '#D33D29');
     });
 

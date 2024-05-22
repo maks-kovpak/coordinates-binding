@@ -24,6 +24,8 @@ class ImageCanvas extends Konva.Stage {
     this.lastCenter = null;
     this.lastDist = 0;
     this.dragStopped = false;
+
+    this.init();
   }
 
   init() {
