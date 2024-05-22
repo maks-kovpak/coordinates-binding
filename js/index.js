@@ -13,6 +13,8 @@ window.markers = [];
 const canvas = new ImageCanvas('image-canvas');
 const map = new GeoMap('map', [50.45145, 30.52433]);
 
+const uuid = document.getElementById('uuid').dataset.uuid;
+
 /* Draw point on click */
 
 canvas.layer.on('click', () => {
@@ -45,6 +47,13 @@ uploadImageButton.addEventListener('change', (e) => {
     map.enable();
   }
 });
+//
+// const url = `https://cdn.farsightvision.com/assets/${uuid}/odm_orthophoto/odm_orthophoto.tif`;
+//
+// document.addEventListener('DOMContentLoaded', () => {
+//   canvas.uploadImage({ url });
+//   map.enable();
+// });
 
 /* Rotation */
 
@@ -63,8 +72,7 @@ rotateButton.addEventListener('click', () => {
 
 /* Send to server */
 
-// TODO: modify if needed
-const API_URL = `https://example.com/`;
+const API_URL = `/${uuid}/`;
 
 function getFormattedData() {
   const data = [];
@@ -89,7 +97,7 @@ async function sendToServer() {
       headers: { 'Content-Type': 'application/json' },
     });
 
-    // Redirect to url sent by server
+    // Redirect to the URL sent by server
     const responseData = await response.json();
     window.location.replace(responseData.url);
   } catch (err) {
@@ -146,7 +154,7 @@ async function showCalculationError() {
 
   try {
     // TODO: set the correct endpoint if needed
-    const response = await fetch(API_URL + '/endpoint', {
+    const response = await fetch(API_URL + 'endpoint', {
       method: 'POST',
       body: JSON.stringify(data),
       headers: { 'Content-Type': 'application/json' },

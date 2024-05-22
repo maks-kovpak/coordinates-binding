@@ -1,4 +1,4 @@
-import { getCenter, getDistance } from '../utils.js';
+import { getCenter, getDistance, getImageFromCDN } from '../utils.js';
 
 class ImageCanvas extends Konva.Stage {
   static sceneWidth = 1000;
@@ -42,7 +42,7 @@ class ImageCanvas extends Konva.Stage {
     this.on('touchend', () => this._onTouchEnd());
   }
 
-  uploadImage({ file = null, url = null, beforeUpload = () => {} }) {
+  uploadImage({ file = null, url = null }) {
     if (!file && !url) {
       throw new Error('Image file or url must be set!');
     }
@@ -89,7 +89,11 @@ class ImageCanvas extends Konva.Stage {
 
       reader.readAsArrayBuffer(file);
     } else if (url) {
-      //   TODO
+      // Only for TIFF images
+      getImageFromCDN(url).then((buffer) => {
+        const tiff = new Tiff({ buffer });
+        img.src = tiff.toDataURL();
+      });
     }
   }
 

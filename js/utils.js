@@ -15,3 +15,8 @@ export function getCenter(p1, p2) {
     y: (p1.y + p2.y) / 2,
   };
 }
+
+export async function getImageFromCDN(imageUrl) {
+  const response = await fetch(imageUrl);
+  return await response.arrayBuffer();
+}
