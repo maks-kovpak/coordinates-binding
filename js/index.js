@@ -1,19 +1,23 @@
-import { replaceMarkerColor } from './utils.js';
 import ImageCanvas from './src/ImageCanvas.js';
 import NumberedPoint from './src/NumberedPoint.js';
+import GeoMap from './src/Map.js';
 
-/* Basic configuration */
+/* Global data */
+
+window.imagePoints = [];
+window.mapPoints = [];
+window.circleGroups = [];
+window.mapMarkers = [];
+
+/* Canvas */
 
 const stage = new ImageCanvas('image-canvas');
 stage.init();
 
-/* Points data */
+/* Map */
 
-let imagePoints = [];
-let mapPoints = [];
-
-window.circleGroups = [];
-window.mapMarkers = [];
+const map = new GeoMap('map', [50.45145, 30.52433]);
+map.init();
 
 /* Draw point on click */
 
@@ -26,8 +30,8 @@ stage.layer.on('click', () => {
   circleGroups.push(numberedPoint);
 
   imagePoints.push({
-    x: Math.round((pos.x / globalImage.width) * globalImage.pixelWidth),
-    y: Math.round((pos.y / globalImage.height) * globalImage.pixelHeight),
+    x: Math.round((pos.x / stage.imageData.width) * stage.imageData.pixelWidth),
+    y: Math.round((pos.y / stage.imageData.height) * stage.imageData.pixelHeight),
   });
 
   document.dispatchEvent(new CustomEvent('AddedNewPoint'));
@@ -38,16 +42,14 @@ stage.layer.on('click', () => {
 const uploadImageButton = document.getElementById('upload-img-button');
 
 uploadImageButton.addEventListener('change', (e) => {
-  stage.uploadImage({
-    file: e.target.files[0],
-    beforeUpload: () => {
-      imagePoints = [];
-      mapPoints = [];
-      mapMarkers.forEach((m) => map.removeLayer(m));
-    },
-  });
+  window.imagePoints = [];
+  window.mapPoints = [];
+  map.removeMarkers();
 
-  enableMap();
+  if (e.target.files.length) {
+    stage.uploadImage({ file: e.target.files[0] });
+    map.enable();
+  }
 });
 
 /* Rotation */
@@ -64,62 +66,6 @@ rotateButton.addEventListener('click', () => {
     g.rotate(currentRotation - 90 * numberOfRotations);
   });
 });
-
-/* Leaflet */
-
-const map = L.map('map').setView([50.45145, 30.52433], 13);
-
-map.on('click', function (e) {
-  const index = mapPoints.length;
-  const marker = new L.Marker([e.latlng.lat, e.latlng.lng], {
-    icon: new L.AwesomeNumberMarkers({
-      number: index + 1,
-      markerColor: 'red',
-    }),
-  });
-
-  marker.on('mouseover', () => {
-    replaceMarkerColor(marker, 'red', 'orange');
-    const circle = circleGroups[index]?.find('Circle')?.at(0);
-    circle?.setAttr('fill', '#F69730');
-  });
-
-  marker.on('mouseout', () => {
-    replaceMarkerColor(marker, 'orange', 'red');
-    const circle = circleGroups[index]?.find('Circle')?.at(0);
-    circle?.setAttr('fill', '#D33D29');
-  });
-
-  marker.addTo(map);
-  mapMarkers.push(marker);
-
-  mapPoints.push({
-    lat: e.latlng.lat,
-    lon: e.latlng.lng,
-  });
-
-  document.dispatchEvent(new CustomEvent('AddedNewMarker'));
-});
-
-const mapElement = document.getElementById('map');
-
-function disableMap() {
-  map._handlers.forEach((handler) => handler.disable());
-  mapElement.style.opacity = '0.5';
-  mapElement.style.pointerEvents = 'none';
-}
-
-function enableMap() {
-  map._handlers.forEach((handler) => handler.enable());
-  mapElement.style.opacity = '1';
-  mapElement.style.pointerEvents = 'all';
-}
-
-L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  maxZoom: 19,
-}).addTo(map);
-
-disableMap();
 
 /* Send to server */
 

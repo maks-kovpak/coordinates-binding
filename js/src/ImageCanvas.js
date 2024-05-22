@@ -14,7 +14,7 @@ class ImageCanvas extends Konva.Stage {
 
     this.layer = new Konva.Layer();
 
-    window.globalImage = {
+    this.imageData = {
       width: ImageCanvas.sceneWidth,
       height: ImageCanvas.sceneHeight,
       pixelWidth: ImageCanvas.sceneWidth,
@@ -47,22 +47,21 @@ class ImageCanvas extends Konva.Stage {
 
     // Clear canvas and map
     this.layer.destroyChildren();
-    beforeUpload();
 
     // Create new image
     const img = new Image();
 
     img.addEventListener('load', () => {
       const aspectRatio = img.width / img.height;
-      globalImage.height = globalImage.width / aspectRatio;
+      this.imageData.height = this.imageData.width / aspectRatio;
 
-      globalImage.pixelWidth = img.width;
-      globalImage.pixelHeight = img.height;
+      this.imageData.pixelWidth = img.width;
+      this.imageData.pixelHeight = img.height;
 
       const image = new Konva.Image({
         image: img,
-        width: globalImage.width,
-        height: globalImage.height,
+        width: this.imageData.width,
+        height: this.imageData.height,
       });
 
       this.layer.add(image);
