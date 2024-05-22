@@ -35,56 +35,20 @@ stage.layer.on('click', () => {
 
 /* Upload image */
 
-function uploadImage(e) {
-  // Clear canvas and map
-  stage.layer.destroyChildren();
-  imagePoints = [];
-  mapPoints = [];
-  mapMarkers.forEach((m) => map.removeLayer(m));
+const uploadImageButton = document.getElementById('upload-img-button');
 
-  // Create new image
-  const img = new Image();
-
-  img.onload = function () {
-    const aspectRatio = img.width / img.height;
-    globalImage.height = globalImage.width / aspectRatio;
-
-    globalImage.pixelWidth = img.width;
-    globalImage.pixelHeight = img.height;
-
-    const image = new Konva.Image({
-      image: img,
-      width: globalImage.width,
-      height: globalImage.height,
-    });
-
-    stage.layer.add(image);
-    stage.layer.draw();
-
-    // Change a rotation center
-    const imageCenter = { x: image.width() / 2, y: image.height() / 2 };
-    stage.layer.offset(imageCenter);
-    stage.layer.position(imageCenter);
-  };
-
-  const reader = new FileReader();
-
-  reader.onload = function () {
-    if (e.target.files[0].type === 'image/tiff') {
-      const tiff = new Tiff({ buffer: this.result });
-      img.src = tiff.toDataURL();
-    } else {
-      img.src = URL.createObjectURL(e.target.files[0]);
-    }
-  };
-
-  reader.readAsArrayBuffer(e.target.files[0]);
+uploadImageButton.addEventListener('change', (e) => {
+  stage.uploadImage({
+    file: e.target.files[0],
+    beforeUpload: () => {
+      imagePoints = [];
+      mapPoints = [];
+      mapMarkers.forEach((m) => map.removeLayer(m));
+    },
+  });
 
   enableMap();
-}
-
-const uploadImageButton = document.getElementById('upload-img-button');
-uploadImageButton.addEventListener('change', uploadImage);
+});
 
 /* Rotation */
 

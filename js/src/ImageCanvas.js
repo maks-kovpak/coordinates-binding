@@ -40,6 +40,58 @@ class ImageCanvas extends Konva.Stage {
     this.on('touchend', () => this._onTouchEnd());
   }
 
+  uploadImage({ file = null, url = null, beforeUpload = () => {} }) {
+    if (!file && !url) {
+      throw new Error('Image file or url must be set!');
+    }
+
+    // Clear canvas and map
+    this.layer.destroyChildren();
+    beforeUpload();
+
+    // Create new image
+    const img = new Image();
+
+    img.addEventListener('load', () => {
+      const aspectRatio = img.width / img.height;
+      globalImage.height = globalImage.width / aspectRatio;
+
+      globalImage.pixelWidth = img.width;
+      globalImage.pixelHeight = img.height;
+
+      const image = new Konva.Image({
+        image: img,
+        width: globalImage.width,
+        height: globalImage.height,
+      });
+
+      this.layer.add(image);
+      this.layer.draw();
+
+      // Change a rotation center
+      const imageCenter = { x: image.width() / 2, y: image.height() / 2 };
+      this.layer.offset(imageCenter);
+      this.layer.position(imageCenter);
+    });
+
+    if (file) {
+      const reader = new FileReader();
+
+      reader.onload = function () {
+        if (file.type === 'image/tiff') {
+          const tiff = new Tiff({ buffer: this.result });
+          img.src = tiff.toDataURL();
+        } else {
+          img.src = URL.createObjectURL(file);
+        }
+      };
+
+      reader.readAsArrayBuffer(file);
+    } else if (url) {
+      //   TODO
+    }
+  }
+
   _fitIntoParentContainer() {
     const parent = this.attrs.container.parentElement;
     const containerWidth = parent.offsetWidth;
