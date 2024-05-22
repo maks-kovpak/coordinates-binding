@@ -32,15 +32,15 @@ class ImageCanvas extends Konva.Stage {
     this.add(this.layer);
     this.draw();
 
-    this.fitIntoParentContainer();
-    window.addEventListener('resize', () => this.fitIntoParentContainer());
+    this._fitIntoParentContainer();
+    window.addEventListener('resize', () => this._fitIntoParentContainer());
 
-    this.on('wheel', (e) => this.onWheel(e));
-    this.on('touchmove', (e) => this.onTouchMove(e));
-    this.on('touchend', () => this.onTouchEnd());
+    this.on('wheel', (e) => this._onWheel(e));
+    this.on('touchmove', (e) => this._onTouchMove(e));
+    this.on('touchend', () => this._onTouchEnd());
   }
 
-  fitIntoParentContainer() {
+  _fitIntoParentContainer() {
     const parent = this.attrs.container.parentElement;
     const containerWidth = parent.offsetWidth;
     const scale = containerWidth / ImageCanvas.sceneWidth;
@@ -50,7 +50,7 @@ class ImageCanvas extends Konva.Stage {
     this.scale({ x: scale, y: scale });
   }
 
-  onWheel(e) {
+  _onWheel(e) {
     e.evt.preventDefault();
 
     const scaleBy = 1.05;
@@ -80,7 +80,7 @@ class ImageCanvas extends Konva.Stage {
     this.batchDraw();
   }
 
-  onTouchMove(e) {
+  _onTouchMove(e) {
     e.evt.preventDefault();
     const touch1 = e.evt.touches[0];
     const touch2 = e.evt.touches[1];
@@ -148,7 +148,7 @@ class ImageCanvas extends Konva.Stage {
     }
   }
 
-  onTouchEnd() {
+  _onTouchEnd() {
     this.lastDist = 0;
     this.lastCenter = null;
   }

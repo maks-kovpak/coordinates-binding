@@ -1,5 +1,6 @@
 import { replaceMarkerColor } from './utils.js';
 import ImageCanvas from './src/ImageCanvas.js';
+import NumberedPoint from './src/NumberedPoint.js';
 
 /* Basic configuration */
 
@@ -11,76 +12,18 @@ stage.init();
 let imagePoints = [];
 let mapPoints = [];
 
-let mapMarkers = [];
+window.circleGroups = [];
+window.mapMarkers = [];
 
 /* Draw point on click */
 
-const circleGroups = [];
-
-function handleCircleHover(circleGroup) {
-  const circle = circleGroup.find('Circle').at(0);
-
-  circle.setAttr('fill', '#F69730');
-  const idx = circleGroups.indexOf(circleGroup);
-
-  const currentMarker = mapMarkers[idx];
-  if (!currentMarker) return;
-
-  replaceMarkerColor(currentMarker, 'red', 'orange');
-}
-
-function handleCircleLeave(circleGroup) {
-  const circle = circleGroup.find('Circle').at(0);
-
-  circle.setAttr('fill', '#D33D29');
-  const idx = circleGroups.indexOf(circleGroup);
-
-  const currentMarker = mapMarkers[idx];
-  if (!currentMarker) return;
-
-  replaceMarkerColor(currentMarker, 'orange', 'red');
-}
-
-stage.layer.on('click', (e) => {
+stage.layer.on('click', () => {
   const pos = stage.layer.getRelativePointerPosition();
-  const circleGroup = new Konva.Group();
+  const numberedPoint = new NumberedPoint(pos, imagePoints.length + 1);
+  numberedPoint.rotate(-90 * numberOfRotations);
 
-  // Draw circle
-  const circle = new Konva.Circle({
-    x: pos.x,
-    y: pos.y,
-    radius: 10,
-    fill: '#F69730',
-  });
-
-  circleGroup.add(circle);
-
-  // Draw point number
-  const number = new Konva.Text({
-    x: pos.x,
-    y: pos.y - 5,
-    text: (imagePoints.length + 1).toString(),
-    fontSize: 12,
-    fontFamily: 'Arial',
-    fill: 'white',
-  });
-
-  number.offsetX(number.width() / 2);
-  circleGroup.add(number);
-
-  // Highlight on hover
-  circleGroup.on('mouseover', () => handleCircleHover(circleGroup));
-  circleGroup.on('mouseout', () => handleCircleLeave(circleGroup));
-
-  // Set circle rotation center
-  const groupCenter = { x: pos.x + circleGroup.width() / 2, y: pos.y + circleGroup.height() / 2 };
-  circleGroup.offset(groupCenter);
-  circleGroup.position(groupCenter);
-
-  circleGroup.rotate(-90 * numberOfRotations);
-
-  stage.layer.add(circleGroup);
-  circleGroups.push(circleGroup);
+  stage.layer.add(numberedPoint);
+  circleGroups.push(numberedPoint);
 
   imagePoints.push({
     x: Math.round((pos.x / globalImage.width) * globalImage.pixelWidth),
