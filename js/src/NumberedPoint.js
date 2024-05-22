@@ -19,9 +19,9 @@ class NumberedPoint extends Konva.Group {
 
   _onMouseOver() {
     this.circle.setAttr('fill', '#F69730');
-    const idx = circleGroups.indexOf(this);
+    const idx = points.indexOf(this);
 
-    const currentMarker = mapMarkers[idx];
+    const currentMarker = markers[idx];
     if (!currentMarker) return;
 
     replaceMarkerColor(currentMarker, 'red', 'orange');
@@ -29,9 +29,9 @@ class NumberedPoint extends Konva.Group {
 
   _onMouseOut() {
     this.circle.setAttr('fill', '#D33D29');
-    const idx = circleGroups.indexOf(this);
+    const idx = points.indexOf(this);
 
-    const currentMarker = mapMarkers[idx];
+    const currentMarker = markers[idx];
     if (!currentMarker) return;
 
     replaceMarkerColor(currentMarker, 'orange', 'red');

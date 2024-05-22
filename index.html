@@ -29,16 +29,10 @@
       <section class="base-container">
         <div class="container image-container">
           <div id="image-canvas"></div>
-          <button class="undo-btn" id="undo-image-button" title="Undo">
-            <img src="./images/undo-icon.svg" alt="Undo" />
-          </button>
         </div>
 
         <div class="container map-container">
           <div id="map"></div>
-          <button class="undo-btn" id="undo-map-button" title="Undo">
-            <img src="./images/undo-icon.svg" alt="Undo" />
-          </button>
         </div>
       </section>
     </main>
@@ -50,6 +44,11 @@
 
         <button id="rotate-btn">Rotate</button>
         <button id="clear-btn">Clear</button>
+
+        <button class="undo-btn" id="undo-button" title="Undo">
+          <span>Undo</span>
+          <img src="./images/undo-icon.svg" alt="Undo" />
+        </button>
       </div>
 
       <button id="send-btn">Ok</button>

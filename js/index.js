@@ -4,11 +4,11 @@ import GeoMap from './src/GeoMap.js';
 
 /* Global data */
 
-window.imagePoints = [];
-window.mapPoints = [];
+window.pixelCoordinates = [];
+window.geoCoordinates = [];
 
-window.circleGroups = [];
-window.mapMarkers = [];
+window.points = [];
+window.markers = [];
 
 const canvas = new ImageCanvas('image-canvas');
 const map = new GeoMap('map', [50.45145, 30.52433]);
@@ -17,13 +17,13 @@ const map = new GeoMap('map', [50.45145, 30.52433]);
 
 canvas.layer.on('click', () => {
   const pos = canvas.layer.getRelativePointerPosition();
-  const numberedPoint = new NumberedPoint(pos, imagePoints.length + 1);
+  const numberedPoint = new NumberedPoint(pos, pixelCoordinates.length + 1);
   numberedPoint.rotate(-90 * numberOfRotations);
 
   canvas.layer.add(numberedPoint);
-  circleGroups.push(numberedPoint);
+  points.push(numberedPoint);
 
-  imagePoints.push({
+  pixelCoordinates.push({
     x: Math.round((pos.x / canvas.imageData.width) * canvas.imageData.pixelWidth),
     y: Math.round((pos.y / canvas.imageData.height) * canvas.imageData.pixelHeight),
   });
@@ -36,8 +36,8 @@ canvas.layer.on('click', () => {
 const uploadImageButton = document.getElementById('upload-img-button');
 
 uploadImageButton.addEventListener('change', (e) => {
-  window.imagePoints = [];
-  window.mapPoints = [];
+  window.pixelCoordinates = [];
+  window.geoCoordinates = [];
   map.removeMarkers();
 
   if (e.target.files.length) {
@@ -56,7 +56,7 @@ rotateButton.addEventListener('click', () => {
   canvas.layer.rotation(currentRotation + 90);
   numberOfRotations++;
 
-  circleGroups.forEach((g) => {
+  points.forEach((g) => {
     g.rotate(currentRotation - 90 * numberOfRotations);
   });
 });
@@ -68,10 +68,10 @@ const API_URL = `https://example.com/`;
 
 function getFormattedData() {
   const data = [];
-  const len = Math.min(imagePoints.length, mapPoints.length);
+  const len = Math.min(pixelCoordinates.length, geoCoordinates.length);
 
   for (let i = 0; i < len; i++) {
-    data.push({ ...imagePoints[i], ...mapPoints[i] });
+    data.push({ ...pixelCoordinates[i], ...geoCoordinates[i] });
   }
 
   console.log(data);
@@ -83,11 +83,15 @@ async function sendToServer() {
   const data = getFormattedData();
 
   try {
-    await fetch(API_URL, {
+    const response = await fetch(API_URL, {
       method: 'POST',
       body: JSON.stringify(data),
       headers: { 'Content-Type': 'application/json' },
     });
+
+    // Redirect to url sent by server
+    const responseData = await response.json();
+    window.location.replace(responseData.url);
   } catch (err) {
     console.error(err);
   }
@@ -102,20 +106,29 @@ sendBtn.addEventListener('click', async () => {
 
 /* Undo */
 
-const undoImageButton = document.getElementById('undo-image-button');
-const undoMapButton = document.getElementById('undo-map-button');
+const undoButton = document.getElementById('undo-button');
 
-undoImageButton.addEventListener('click', () => {
-  const circleGroup = circleGroups.pop();
-  circleGroup?.remove();
-  imagePoints.pop();
-});
+function removeLastPoint() {
+  const imagePoint = points.pop();
+  imagePoint?.remove();
+  pixelCoordinates.pop();
+}
 
-undoMapButton.addEventListener('click', () => {
-  const marker = mapMarkers.pop();
+function removeLastMarker() {
+  const marker = markers.pop();
   if (marker) map.instance.removeLayer(marker);
 
-  mapPoints.pop();
+  geoCoordinates.pop();
+}
+
+undoButton.addEventListener('click', () => {
+  if (pixelCoordinates.length >= geoCoordinates.length) {
+    removeLastPoint();
+  }
+
+  if (pixelCoordinates.length <= geoCoordinates.length) {
+    removeLastMarker();
+  }
 });
 
 /* Clear */
@@ -136,6 +149,7 @@ async function showCalculationError() {
     const response = await fetch(API_URL + '/endpoint', {
       method: 'POST',
       body: JSON.stringify(data),
+      headers: { 'Content-Type': 'application/json' },
     });
 
     const calculationErrorData = await response.json();

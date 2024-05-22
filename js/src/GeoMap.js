@@ -29,11 +29,11 @@ class GeoMap {
   }
 
   removeMarkers() {
-    mapMarkers.forEach((m) => this.instance.removeLayer(m));
+    markers.forEach((m) => this.instance.removeLayer(m));
   }
 
   _onClick(e) {
-    const index = mapMarkers.length;
+    const index = markers.length;
     const marker = new Leaflet.Marker([e.latlng.lat, e.latlng.lng], {
       icon: new Leaflet.AwesomeNumberMarkers({
         number: index + 1,
@@ -43,20 +43,20 @@ class GeoMap {
 
     marker.on('mouseover', () => {
       replaceMarkerColor(marker, 'red', 'orange');
-      const circle = circleGroups[index]?.circle;
+      const circle = points[index]?.circle;
       circle?.setAttr('fill', '#F69730');
     });
 
     marker.on('mouseout', () => {
       replaceMarkerColor(marker, 'orange', 'red');
-      const circle = circleGroups[index]?.circle;
+      const circle = points[index]?.circle;
       circle?.setAttr('fill', '#D33D29');
     });
 
     marker.addTo(this.instance);
-    mapMarkers.push(marker);
+    markers.push(marker);
 
-    mapPoints.push({
+    geoCoordinates.push({
       lat: e.latlng.lat,
       lon: e.latlng.lng,
     });
