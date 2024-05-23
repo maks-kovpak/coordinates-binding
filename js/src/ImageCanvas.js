@@ -37,6 +37,7 @@ class ImageCanvas extends Konva.Stage {
     this._fitIntoParentContainer();
     window.addEventListener('resize', () => this._fitIntoParentContainer());
 
+    // Add event listeners for zoom, drag and drop
     this.on('wheel', (e) => this._onWheel(e));
     this.on('touchmove', (e) => this._onTouchMove(e));
     this.on('touchend', () => this._onTouchEnd());

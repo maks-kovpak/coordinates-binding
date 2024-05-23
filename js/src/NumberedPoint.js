@@ -1,4 +1,5 @@
 import { replaceMarkerColor } from '../utils.js';
+import { ColorsNames, ColorsValues } from '../constants.js';
 
 class NumberedPoint extends Konva.Group {
   constructor(position, number) {
@@ -11,30 +12,30 @@ class NumberedPoint extends Konva.Group {
       x: this.pos.x,
       y: this.pos.y,
       radius: 10,
-      fill: '#F69730',
+      fill: ColorsValues.Orange,
     });
 
     this._create();
   }
 
   _onMouseOver() {
-    this.circle.setAttr('fill', '#F69730');
+    this.circle.setAttr('fill', ColorsValues.Orange);
     const idx = points.indexOf(this);
 
     const currentMarker = markers[idx];
     if (!currentMarker) return;
 
-    replaceMarkerColor(currentMarker, 'red', 'orange');
+    replaceMarkerColor(currentMarker, ColorsNames.Red, ColorsNames.Orange);
   }
 
   _onMouseOut() {
-    this.circle.setAttr('fill', '#D33D29');
+    this.circle.setAttr('fill', ColorsValues.Red);
     const idx = points.indexOf(this);
 
     const currentMarker = markers[idx];
     if (!currentMarker) return;
 
-    replaceMarkerColor(currentMarker, 'orange', 'red');
+    replaceMarkerColor(currentMarker, ColorsNames.Orange, ColorsNames.Red);
   }
 
   _create() {
