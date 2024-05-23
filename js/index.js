@@ -35,25 +35,25 @@ canvas.layer.on('click', () => {
 
 /* Upload image */
 
-const uploadImageButton = document.getElementById('upload-img-button');
-
-uploadImageButton.addEventListener('change', (e) => {
-  window.pixelCoordinates = [];
-  window.geoCoordinates = [];
-  map.removeMarkers();
-
-  if (e.target.files.length) {
-    canvas.uploadImage({ file: e.target.files[0] });
-    map.enable();
-  }
-});
+// const uploadImageButton = document.getElementById('upload-img-button');
 //
-// const url = `https://cdn.farsightvision.com/assets/${uuid}/odm_orthophoto/odm_orthophoto.tif`;
+// uploadImageButton.addEventListener('change', (e) => {
+//   window.pixelCoordinates = [];
+//   window.geoCoordinates = [];
+//   map.removeMarkers();
 //
-// document.addEventListener('DOMContentLoaded', () => {
-//   canvas.uploadImage({ url });
-//   map.enable();
+//   if (e.target.files.length) {
+//     canvas.uploadImage({ file: e.target.files[0] });
+//     map.enable();
+//   }
 // });
+
+const url = `https://cdn.farsightvision.com/assets/${uuid}/odm_orthophoto/odm_orthophoto.tif`;
+
+document.addEventListener('DOMContentLoaded', () => {
+  canvas.uploadImage({ url });
+  map.enable();
+});
 
 /* Rotation */
 
