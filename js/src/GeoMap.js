@@ -1,4 +1,5 @@
 import { replaceMarkerColor } from '../utils.js';
+import { ColorsNames, ColorsValues } from '../constants.js';
 
 const Leaflet = window.L;
 
@@ -34,33 +35,40 @@ class GeoMap {
 
   _onClick(e) {
     const index = markers.length;
+
+    // Create a new marker
     const marker = new Leaflet.Marker([e.latlng.lat, e.latlng.lng], {
       icon: new Leaflet.AwesomeNumberMarkers({
         number: index + 1,
-        markerColor: 'red',
+        markerColor: ColorsNames.Red,
       }),
     });
 
+    // Highlight the marker and the corresponding point on hover
     marker.on('mouseover', () => {
-      replaceMarkerColor(marker, 'red', 'orange');
+      replaceMarkerColor(marker, ColorsNames.Red, ColorsNames.Orange);
       const circle = points[index]?.circle;
-      circle?.setAttr('fill', '#F69730');
+      circle?.setAttr('fill', ColorsValues.Orange);
     });
 
+    // Remove highlight on mouse leave
     marker.on('mouseout', () => {
-      replaceMarkerColor(marker, 'orange', 'red');
+      replaceMarkerColor(marker, ColorsNames.Orange, ColorsNames.Red);
       const circle = points[index]?.circle;
-      circle?.setAttr('fill', '#D33D29');
+      circle?.setAttr('fill', ColorsValues.Red);
     });
 
+    // Display marker
     marker.addTo(this.instance);
     markers.push(marker);
 
+    // Push geographic coordinates to a global array
     geoCoordinates.push({
       lat: e.latlng.lat,
       lon: e.latlng.lng,
     });
 
+    // Notify about changes (added new marker)
     document.dispatchEvent(new CustomEvent('AddedNewMarker'));
   }
 }
