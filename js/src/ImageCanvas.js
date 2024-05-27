@@ -21,6 +21,7 @@ class ImageCanvas extends Konva.Stage {
       pixelHeight: ImageCanvas.sceneHeight,
     };
 
+    // Drag'n'drop settings
     this.lastCenter = null;
     this.lastDist = 0;
     this.dragStopped = false;
@@ -31,9 +32,11 @@ class ImageCanvas extends Konva.Stage {
   init() {
     Konva.hitOnDragEnabled = true;
 
+    // Draw the main layer
     this.add(this.layer);
     this.draw();
 
+    // Fit into parent container on window resize
     this._fitIntoParentContainer();
     window.addEventListener('resize', () => this._fitIntoParentContainer());
 
@@ -143,7 +146,7 @@ class ImageCanvas extends Konva.Stage {
     const touch1 = e.evt.touches[0];
     const touch2 = e.evt.touches[1];
 
-    // We need to restore dragging, if it was cancelled by multi-touch
+    // We need to restore dragging if it was cancelled by multi-touch
     if (touch1 && !touch2 && !this.isDragging() && this.dragStopped) {
       this.startDrag();
       this.dragStopped = false;

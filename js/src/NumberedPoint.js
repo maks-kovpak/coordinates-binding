@@ -57,6 +57,8 @@ class NumberedPoint extends Konva.Group {
 
     // Highlight on hover
     this.on('mouseover', () => this._onMouseOver());
+
+    // Remove highlight on mouse leave
     this.on('mouseout', () => this._onMouseOut());
 
     // Set circle rotation center
